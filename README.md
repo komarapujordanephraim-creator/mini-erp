@@ -1,5 +1,7 @@
 # Mini ERP
 
+**Live demo:** https://jordanephraim6.pythonanywhere.com/ (login `demo` / `demo12345`, fictional data, may be reset)
+
 A small ERP for a trading business: **stock, purchase orders and invoices** in one Django app. Stock is never typed in; it is calculated from an append-only movement ledger, so every unit can be traced to a purchase, sale, return or adjustment.
 
 Django 5, SQLite by default. Portfolio project with a fictional demo company.
