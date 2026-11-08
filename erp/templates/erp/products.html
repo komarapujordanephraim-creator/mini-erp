@@ -1,0 +1,6 @@
+{% extends "erp/base.html" %}{% block title %}Stock · Mini ERP{% endblock %}
+{% block content %}<h1>Stock</h1><p class="sub">Stock is calculated from the movement ledger, never typed in.</p>
+<div class="card" style="overflow-x:auto"><table><tr><th>SKU</th><th>Product</th><th class="num">Price</th><th class="num">Cost</th><th class="num">On hand</th><th class="num">Reorder at</th></tr>
+{% for p in items %}<tr><td><a href="{% url 'product' p.pk %}">{{ p.sku }}</a></td><td>{{ p.name }}</td><td class="num">{{ cur }}{{ p.unit_price }}</td><td class="num">{{ cur }}{{ p.unit_cost }}</td>
+<td class="num {% if p.on_hand|default:0 <= p.reorder_level %}low{% endif %}">{{ p.on_hand|default:0 }}</td><td class="num">{{ p.reorder_level }}</td></tr>
+{% empty %}<tr><td colspan="6" class="muted">No products. Add them in the admin or run seed_demo.</td></tr>{% endfor %}</table></div>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "erp/base.html" %}{% block title %}{{ po.number }} · Mini ERP{% endblock %}
+{% block content %}<h1>{{ po.number }} <span class="pill s-{{ po.status }}">{{ po.get_status_display }}</span></h1><p class="sub">{{ po.supplier }}{% if po.received_at %} · received {{ po.received_at|date:"j M Y H:i" }}{% endif %}</p>
+<div class="card" style="overflow-x:auto"><table><tr><th>Item</th><th class="num">Qty</th><th class="num">Cost</th><th class="num">Amount</th></tr>
+{% for l in lines %}<tr><td>{{ l.product }}</td><td class="num">{{ l.qty }}</td><td class="num">{{ cur }}{{ l.unit_cost }}</td><td class="num">{{ cur }}{{ l.amount }}</td></tr>{% empty %}<tr><td colspan="4" class="muted">No lines yet.</td></tr>{% endfor %}
+<tr><td colspan="3" class="num"><b>Total</b></td><td class="num"><b>{{ cur }}{{ po.total }}</b></td></tr></table>
+{% if po.status == "draft" %}<form method="post" class="row" style="margin-top:14px">{% csrf_token %}{{ form.as_p }}<button class="btn">Add line</button></form>
+<form method="post" action="{% url 'po_action' po.pk 'place' %}" style="margin-top:14px">{% csrf_token %}<button class="btn pri">Place order</button></form>{% endif %}
+{% if po.status == "ordered" %}<form method="post" action="{% url 'po_action' po.pk 'receive' %}" style="margin-top:14px">{% csrf_token %}<button class="btn pri">Receive goods (adds stock)</button></form>{% endif %}
+</div>{% endblock %}

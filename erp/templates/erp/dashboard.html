@@ -1,0 +1,20 @@
+{% extends "erp/base.html" %}{% load humanize %}
+{% block content %}
+<h1>{{ company }}</h1><p class="sub">Stock, sales and purchases in one place.</p>
+<div class="grid g4">
+  <div class="card kpi"><b>{{ cur }}{{ sales_month|intcomma }}</b><small>Sales in {{ month }} (before tax)</small></div>
+  <div class="card kpi"><b style="color:var(--warn)">{{ cur }}{{ unpaid|intcomma }}</b><small>Unpaid invoices</small></div>
+  <div class="card kpi"><b style="color:var(--bad)">{{ overdue|length }}</b><small>Overdue ({{ cur }}{{ overdue_total|intcomma }})</small></div>
+  <div class="card kpi"><b style="color:var(--cy)">{{ cur }}{{ stock_value|intcomma }}</b><small>Stock value at cost</small></div>
+</div>
+<div class="grid g2" style="margin-top:14px">
+  <div class="card"><h3 style="margin-top:0">Reorder now</h3>
+    <table><tr><th>Product</th><th class="num">On hand</th><th class="num">Reorder at</th></tr>
+    {% for p in low %}<tr><td><a href="{% url 'product' p.pk %}">{{ p.sku }}</a> {{ p.name }}</td><td class="num low">{{ p.on_hand|default:0 }}</td><td class="num">{{ p.reorder_level }}</td></tr>
+    {% empty %}<tr><td colspan="3" class="muted">All products above their reorder level.</td></tr>{% endfor %}</table>
+    <p style="margin-bottom:0"><a href="{% url 'pos' %}">Create a purchase order →</a></p></div>
+  <div class="card"><h3 style="margin-top:0">Latest stock movements</h3>
+    <table>{% for m in moves %}<tr><td class="muted" style="white-space:nowrap">{{ m.at|date:"j M H:i" }}</td><td>{{ m.product.sku }}</td><td class="num {% if m.qty < 0 %}low{% endif %}">{% if m.qty > 0 %}+{% endif %}{{ m.qty }}</td><td>{{ m.get_kind_display }} <span class="muted">{{ m.ref }}</span></td></tr>
+    {% empty %}<tr><td class="muted">No movements yet.</td></tr>{% endfor %}</table></div>
+</div>
+{% endblock %}

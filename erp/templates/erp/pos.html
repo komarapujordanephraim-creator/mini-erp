@@ -1,0 +1,6 @@
+{% extends "erp/base.html" %}{% block title %}Purchases · Mini ERP{% endblock %}
+{% block content %}<h1>Purchase orders</h1>
+<div class="card" style="margin-bottom:14px"><form method="post" class="row">{% csrf_token %}{{ form.as_p }}<button class="btn pri">New purchase order</button></form></div>
+<div class="card" style="overflow-x:auto"><table><tr><th>Number</th><th>Supplier</th><th>Status</th><th class="num">Total</th></tr>
+{% for po in items %}<tr><td><a href="{% url 'po' po.pk %}">{{ po.number }}</a></td><td>{{ po.supplier }}</td><td><span class="pill s-{{ po.status }}">{{ po.get_status_display }}</span></td><td class="num">{{ cur }}{{ po.total }}</td></tr>
+{% empty %}<tr><td colspan="4" class="muted">No purchase orders yet.</td></tr>{% endfor %}</table></div>{% endblock %}

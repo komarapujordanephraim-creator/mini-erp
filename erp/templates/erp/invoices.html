@@ -1,0 +1,6 @@
+{% extends "erp/base.html" %}{% block title %}Invoices · Mini ERP{% endblock %}
+{% block content %}<h1>Invoices</h1>
+<div class="card" style="margin-bottom:14px"><form method="post" class="row">{% csrf_token %}{{ form.as_p }}<button class="btn pri">New invoice</button></form></div>
+<div class="card" style="overflow-x:auto"><table><tr><th>Number</th><th>Customer</th><th>Status</th><th>Issued</th><th>Due</th><th class="num">Total</th></tr>
+{% for i in items %}<tr><td><a href="{% url 'invoice' i.pk %}">{{ i.number|default:"Draft" }}</a></td><td>{{ i.customer }}</td><td><span class="pill s-{{ i.status }}">{{ i.get_status_display }}</span>{% if i.status == "issued" and i.due_on < today %} <span class="low">overdue</span>{% endif %}</td>
+<td>{{ i.issued_on|default:"" }}</td><td>{{ i.due_on|default:"" }}</td><td class="num">{{ cur }}{{ i.total }}</td></tr>{% empty %}<tr><td colspan="6" class="muted">No invoices yet.</td></tr>{% endfor %}</table></div>{% endblock %}

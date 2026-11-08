@@ -1,0 +1,17 @@
+{% extends "erp/base.html" %}{% block title %}Invoice · Mini ERP{% endblock %}
+{% block content %}<h1>{{ inv.number|default:"Draft invoice" }} <span class="pill s-{{ inv.status }}">{{ inv.get_status_display }}</span></h1>
+<p class="sub">{{ inv.customer }}{% if inv.customer.gstin %} · GSTIN {{ inv.customer.gstin }}{% endif %}{% if inv.issued_on %} · issued {{ inv.issued_on }} · due {{ inv.due_on }}{% endif %}{% if inv.paid_on %} · paid {{ inv.paid_on }}{% endif %}</p>
+<div class="card" style="overflow-x:auto"><table><tr><th>Item</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Amount</th><th></th></tr>
+{% for l in lines %}<tr><td>{{ l.product.sku }} {{ l.description }}</td><td class="num">{{ l.qty }}</td><td class="num">{{ cur }}{{ l.unit_price }}</td><td class="num">{{ cur }}{{ l.line_total }}</td>
+<td>{% if inv.status == "draft" %}<form method="post" action="{% url 'invoice_action' inv.pk 'remove-line' %}">{% csrf_token %}<input type="hidden" name="line" value="{{ l.pk }}"><button class="btn bad" style="padding:3px 10px">Remove</button></form>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5" class="muted">No lines yet.</td></tr>{% endfor %}
+<tr><td colspan="3" class="num muted">Subtotal</td><td class="num">{{ cur }}{{ inv.subtotal }}</td><td></td></tr>
+<tr><td colspan="3" class="num muted">Tax {{ inv.tax_rate }}%</td><td class="num">{{ cur }}{{ inv.tax }}</td><td></td></tr>
+<tr><td colspan="3" class="num"><b>Total</b></td><td class="num"><b>{{ cur }}{{ inv.total }}</b></td><td></td></tr></table>
+{% if inv.status == "draft" %}<form method="post" class="row" style="margin-top:14px">{% csrf_token %}{{ form.as_p }}<button class="btn">Add line</button></form>{% endif %}
+<div class="row" style="margin-top:16px">
+{% if inv.status == "draft" %}<form method="post" action="{% url 'invoice_action' inv.pk 'issue' %}">{% csrf_token %}<button class="btn pri">Issue invoice (takes stock)</button></form>{% endif %}
+{% if inv.status == "issued" %}<form method="post" action="{% url 'invoice_action' inv.pk 'paid' %}">{% csrf_token %}<button class="btn pri">Mark paid</button></form>
+<form method="post" action="{% url 'invoice_action' inv.pk 'void' %}">{% csrf_token %}<button class="btn bad">Void (returns stock)</button></form>{% endif %}
+{% if inv.number %}<a class="btn" href="{% url 'invoice_print' inv.pk %}">Printable invoice</a>{% endif %}
+</div></div>{% endblock %}

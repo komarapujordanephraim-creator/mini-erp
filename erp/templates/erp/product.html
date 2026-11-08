@@ -1,0 +1,5 @@
+{% extends "erp/base.html" %}{% block title %}{{ p.sku }} · Mini ERP{% endblock %}
+{% block content %}<h1>{{ p.sku }} · {{ p.name }}</h1><p class="sub">On hand: <b>{{ p.stock }}</b> · price {{ cur }}{{ p.unit_price }} · cost {{ cur }}{{ p.unit_cost }}</p>
+<div class="grid g2"><div class="card" style="overflow-x:auto"><h3 style="margin-top:0">Ledger</h3><table><tr><th>When</th><th class="num">Qty</th><th>Type</th><th>Ref / note</th><th>By</th></tr>
+{% for m in moves %}<tr><td class="muted">{{ m.at|date:"j M Y H:i" }}</td><td class="num">{% if m.qty > 0 %}+{% endif %}{{ m.qty }}</td><td>{{ m.get_kind_display }}</td><td>{{ m.ref }} {{ m.note }}</td><td class="muted">{{ m.by|default:"" }}</td></tr>{% empty %}<tr><td colspan="5" class="muted">No movements.</td></tr>{% endfor %}</table></div>
+<div class="card"><h3 style="margin-top:0">Adjust stock</h3><form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn pri">Save adjustment</button></form></div></div>{% endblock %}
